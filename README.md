@@ -10,7 +10,7 @@ Here is my recipe:
 2. Once STT times out, stop recording and send the audio as an attachment to an LLM.
 3. Use TTS to read the LLM response aloud.
 
-This can run on Chrome, Safari, and even mobile browsers with no server-side components. 
+This can run on Chrome, Safari, and even mobile browsers with no server-side components. This does not work on Brave or Firefox due to missing browser features.
 
 ## Configuration
 
@@ -29,3 +29,5 @@ To use the assistant, you need an [OpenRouter](https://openrouter.ai/) API key. 
 ## Next steps
 
 In order to create a custom voice agent you should be able to just offer your service via a custom chat-completion api and that way have a clear separation between voice bits and llm "agent" bits.
+
+I have no idea how to test this. If you have ideas of how to test web speech APIs using playwright or something please open a pull req.
