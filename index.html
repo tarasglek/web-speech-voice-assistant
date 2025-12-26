@@ -1,0 +1,69 @@
+<html>
+  <head>
+    <title>Audio Input</title>
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        font-family: sans-serif;
+      }
+
+      .mic-icon {
+        height: 60vh;
+        width: 60vh;
+        transition: color 0.3s ease-in-out;
+        color: gray;
+      }
+
+      .mic-icon svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      #status-div {
+        height: 10vh;
+        font-size: 2em;
+        color: #333;
+        text-align: center;
+      }
+
+      #log-div {
+        height: 20vh;
+        width: 80%;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+        font-family: monospace;
+        font-size: 0.8em;
+        background-color: #f9f9f9;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="mic-icon-on" class="mic-icon">
+      <i data-lucide="mic"></i>
+    </div>
+    <div id="mic-icon-off" class="mic-icon" style="display: none">
+      <i data-lucide="mic-off"></i>
+    </div>
+    <div id="status-div"></div>
+    <div id="log-div"></div>
+    <!-- from https://storage.googleapis.com/material-design/downloads/material_product_sounds.zip -->
+    <audio
+      id="activation-sound"
+      src="material_product_sounds/ogg/03%20Primary%20System%20Sounds/state-change_confirm-up.ogg"
+      preload="auto"
+      controls
+    >
+    </audio>
+    <div style="margin-top: 20px;">
+      <input type="password" id="api-key-input" placeholder="Enter OpenRouter API Key" style="padding: 8px; width: 300px;">
+    </div>
+    <script type="module" src="src/voice-assistant.ts"></script>
+  </body>
+</html>
