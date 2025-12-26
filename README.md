@@ -1,4 +1,6 @@
-#web-speech-voice-assistant
+# web-speech-voice-assistant
+
+[Live Demo](https://tarasglek.github.io/web-speech-voice-assistant/)
 
 I got frustrated with how hard it was to set up a DIY voice assistant(eg equiv of Alexa or Google home). Eg one still needs to throw together a wake-word detection engine, VAD to detect silence, etc. For example I completely failed to setup the home assistance voice support.
 
@@ -16,3 +18,14 @@ Here is my recipe:
 3) Use TTS to read LLM response
 
 This can run on Chrome, Safari, even mobile versions with no serverside.
+
+## Configuration
+
+To use the assistant, you need an [OpenRouter](https://openrouter.ai/) API key. You can provide it in two ways:
+1. Enter it directly into the "API Key" input field on the web page.
+2. Create a file named `public/api/llm-completion-config.json` (not committed) with the following structure:
+   ```json
+   {
+     "api_key": "your-api-key-here"
+   }
+   ```
