@@ -133,7 +133,7 @@ class VoiceAssistant {
 
       if (!apiKey) {
         throw new Error(
-          "LLM API key is missing. Please provide it via the input field or server configuration.",
+          "LLM API key is missing. Please provide it via the OpenRouter API key input field below.",
         );
       }
 
