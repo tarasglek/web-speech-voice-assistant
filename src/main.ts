@@ -64,8 +64,7 @@ class VoiceAssistant {
     if (!event.audioUrl) return;
 
     try {
-      const audioBlob = await fetch(event.audioUrl).then((res) => res.blob());
-      const audioBuffer = await audioBlob.arrayBuffer();
+      const audioBuffer = await fetch(event.audioUrl).then((res) => res.arrayBuffer());
       const base64Audio = binary2base64(new Uint8Array(audioBuffer));
 
       const now = new Date();
