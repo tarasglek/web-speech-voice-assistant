@@ -248,7 +248,7 @@ function updateUI(
       switch (event.state) {
         case VoiceAssistantState.LISTENING_FOR_WAKE_WORD:
           micIconOn.style.color = "red";
-          statusDiv.textContent = "Say 'OK Metallica' to start.";
+          statusDiv.textContent = "Say 'OK Google' to start.";
           break;
         case VoiceAssistantState.ACTIVATING:
           micIconOn.style.color = "orange";
@@ -325,6 +325,7 @@ window.addEventListener("beforeunload", () => {
   try {
     const isMobile = true; ///Mobi/i.test(navigator.userAgent);
     const client = await VoiceClient.init({
+      wakePhraseRegex: /(?:ok|okay)[^a-z]+google/i,
       initialState: isMobile
         ? VoiceAssistantState.MUTED
         : VoiceAssistantState.LISTENING_FOR_WAKE_WORD,
