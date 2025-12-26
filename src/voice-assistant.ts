@@ -342,7 +342,7 @@ window.addEventListener("beforeunload", () => {
       logError,
     });
     const assistant = new VoiceAssistant(client);
-    log("Voice assistant initialized. Listening for events...");
+    log("Voice assistant initialized. Click mic to unmute.");
 
     if (micIconOn) {
       micIconOn.addEventListener("click", async () => {
