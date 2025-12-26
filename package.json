@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --base=/web-speech-voice-assistant/",
     "preview": "vite preview",
     "watch": "watchexec -e ts,js -w src/ -w index.html -- deno run build"
   },

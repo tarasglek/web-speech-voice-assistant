@@ -23,7 +23,7 @@ This can run on Chrome, Safari, even mobile versions with no serverside.
 
 To use the assistant, you need an [OpenRouter](https://openrouter.ai/) API key. You can provide it in two ways:
 1. Enter it directly into the "API Key" input field on the web page.
-2. Create a file named `public/api/llm-completion-config.json` (not committed) with the following structure:
+2. Serve a configuration file from an authenticated endpoint at `/api/llm-completion-config.json` with the following structure:
    ```json
    {
      "api_key": "your-api-key-here"
