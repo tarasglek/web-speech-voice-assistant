@@ -1,3 +1,12 @@
+/**
+ * @license
+ * Copyright (c) 2025, Taras Glek
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 // deno-lint-ignore-file no-explicit-any
 import { createIcons, Mic, MicOff } from "lucide";
 import { VoiceAssistantState, VoiceClient } from "./web-speech";
