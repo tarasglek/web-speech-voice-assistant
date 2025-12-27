@@ -17,16 +17,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          deno-version: v2.x
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: Install dependencies
-        run: deno install
+        run: pnpm install
 
       - name: Build
-        run: deno task build-github-pages
+        run: pnpm build-github-pages
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
