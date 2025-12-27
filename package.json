@@ -19,7 +19,7 @@
     "extendable-media-recorder": "^9.2.31",
     "extendable-media-recorder-wav-encoder": "^7.0.132",
     "lucide": "^0.562.0",
-    "openai": "^4.86.1"
+    "openai": "^6.15.0"
   },
   "devDependencies": {
     "typescript": "~5.9.3",
