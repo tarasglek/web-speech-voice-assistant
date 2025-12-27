@@ -4,10 +4,6 @@
   "version": "0.0.0",
   "license": "BSD-3-Clause",
   "type": "module",
-  "imports": {
-    "url": "node:url",
-    "fs/promises": "node:fs/promises"
-  },
   "scripts": {
     "dev": "vite",
     "build-github-pages": "pnpm build --base=/web-speech-voice-assistant/",

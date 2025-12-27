@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
 import * as emr from "extendable-media-recorder";
 import * as wavEncoder from "extendable-media-recorder-wav-encoder";
 

@@ -7,7 +7,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// deno-lint-ignore-file no-explicit-any
 import { createIcons, Mic, MicOff } from "lucide";
 import OpenAI from "openai";
 import { VoiceAssistantState, VoiceClient } from "./web-speech";
