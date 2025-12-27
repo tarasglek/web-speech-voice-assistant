@@ -10,10 +10,10 @@
   },
   "scripts": {
     "dev": "vite",
-    "build-github-pages": "deno run build --base=/web-speech-voice-assistant/",
+    "build-github-pages": "pnpm build --base=/web-speech-voice-assistant/",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "watch": "watchexec -e ts,js,json -w src/ -w index.html -- deno run build"
+    "watch": "watchexec -e ts,js,json -w src/ -w index.html -- pnpm build"
   },
   "dependencies": {
     "extendable-media-recorder": "^9.2.31",
