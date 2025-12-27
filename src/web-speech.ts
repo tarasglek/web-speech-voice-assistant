@@ -119,8 +119,8 @@ export class VoiceClient {
   #wakePhraseRegex: RegExp;
   #recognition: any;
   #audioRecorder: AudioRecorder | undefined;
-  #endOfSpeechTimeout: number | undefined;
-  #noSpeechAfterWakeWordTimeout: number | undefined;
+  #endOfSpeechTimeout: any | undefined;
+  #noSpeechAfterWakeWordTimeout: any | undefined;
   #finalTranscriptSinceRecording: string;
   #utterance: SpeechSynthesisUtterance;
   #log: (msg: string) => void;
