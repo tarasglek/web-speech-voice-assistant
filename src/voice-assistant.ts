@@ -123,13 +123,8 @@ class VoiceAssistant {
       });
 
       const response = await openai.chat.completions.create({
+         stream: true,
         model: "mistralai/voxtral-small-24b-2507",
-        // @ts-ignore: OpenRouter specific field
-        reasoning: {
-          effort: "high",
-          exclude: false,
-          enabled: true,
-        },
         messages: [{
           role: "system",
           content: [
@@ -151,7 +146,7 @@ class VoiceAssistant {
             },
           ],
         }],
-      } as any);
+      });
 
       log(`LLM response: ${JSON.stringify(response, undefined, 2)}`);
 
