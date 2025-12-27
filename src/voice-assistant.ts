@@ -146,7 +146,7 @@ class VoiceAssistant {
             },
           ],
         }],
-      }) as any as AsyncIterable<any>;
+      });
 
       let fullResponse = "";
       let currentSentence = "";
