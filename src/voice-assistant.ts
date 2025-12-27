@@ -122,8 +122,8 @@ class VoiceAssistant {
         dangerouslyAllowBrowser: true,
       });
 
-      const response = await openai.chat.completions.create({
-         stream: true,
+      const stream = await openai.chat.completions.create({
+        stream: true,
         model: "mistralai/voxtral-small-24b-2507",
         messages: [{
           role: "system",
@@ -146,14 +146,38 @@ class VoiceAssistant {
             },
           ],
         }],
-      });
+      }) as any as AsyncIterable<any>;
 
-      log(`LLM response: ${JSON.stringify(response, undefined, 2)}`);
+      let fullResponse = "";
+      let currentSentence = "";
+      const sentenceEndRegex = /[.!?]\s+/;
 
-      const responseText = response.choices?.[0]?.message?.content;
-      if (responseText) {
-        await this.client.speak(responseText);
-      } else {
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content || "";
+        if (content) {
+          fullResponse += content;
+          currentSentence += content;
+
+          if (sentenceEndRegex.test(currentSentence)) {
+            const parts = currentSentence.split(sentenceEndRegex);
+            while (parts.length > 1) {
+              const toSpeak = parts.shift()?.trim();
+              if (toSpeak) {
+                log(`Streaming sentence: ${toSpeak}`);
+                await this.client.speak(toSpeak);
+              }
+            }
+            currentSentence = parts[0] || "";
+          }
+        }
+      }
+
+      if (currentSentence.trim()) {
+        log(`Streaming final sentence: ${currentSentence.trim()}`);
+        await this.client.speak(currentSentence.trim());
+      }
+
+      if (!fullResponse) {
         log("No response text from LLM.");
         await this.client.speak("I'm sorry, I didn't get that.");
       }
