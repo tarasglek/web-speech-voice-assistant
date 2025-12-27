@@ -1,14 +1,14 @@
 # Simplest Possible Voice Assistant Implementation
 
-I got frustrated with how hard it was to set up a DIY voice assistant (e.g., the equivalent of Alexa or Google Home). You still need to throw together wake-word detection, VAD to detect silence, etc. For example, I completely failed to set up Home Assistant voice support.
+I got frustrated with how hard it was to set up a DIY voice assistant (e.g., the equivalent of Alexa or Google Home). You need to figure out wake-word detection, VAD to detect silence, etc. For example, I completely failed to set up Home Assistant voice support due to complex instructions.
 
-There are a lot of SaaS services that offer a version of this, but that also seemed too hard. 
+There are a lot of SaaS services that offer a version of this, but one should not need any other services for this.
 
 Modern browsers offer web audio recording, speech-to-text, and text-to-speech engines. Audio recording can run concurrently with STT. 
 
 Here is my recipe:
 
-1. Use STT + a regex to simulate a wake word and start recording. Web browsers use pretty lightweight old STT models, so we only use STT for wakewords, prefer to pass raw audio to LLMs.
+1. Use STT + a regex to simulate a wake word and start recording. Web browsers use pretty lightweight old STT models that poorly recognize language, so we only use STT for wakewords, prefer to pass raw audio to LLMs.
 2. Once STT times out, stop recording, convert raw audio to wav and send the wav as an attachment to an LLM. So far https://openrouter.ai/mistralai/voxtral-small-24b-2507 seems nice and fast. Gemini flash is another good model family for this.
 3. Use TTS to read the LLM response aloud.
 
