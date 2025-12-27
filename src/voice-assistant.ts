@@ -72,115 +72,49 @@ class VoiceAssistant {
     }
   }
 
+  async #getConfig() {
+    if (this.llm_config !== undefined) return this.llm_config;
+    const apiKey = (document.getElementById("api-key-input") as HTMLInputElement)?.value;
+    if (apiKey) return { api_key: apiKey, base_url: "https://openrouter.ai/api/v1" };
+    try {
+      const res = await fetch("/api/llm-completion-config.json");
+      this.llm_config = res.ok ? await res.json() : null;
+    } catch { this.llm_config = null; }
+    return this.llm_config;
+  }
+
   async #handleCommand(event: CommandEvent) {
     if (!event.audioUrl) return;
-
     try {
-      const apiKeyInput = document.getElementById("api-key-input") as
-        | HTMLInputElement
-        | null;
-      let apiKey = apiKeyInput?.value;
-      let baseUrl = "https://openrouter.ai/api/v1";
+      const config = await this.#getConfig();
+      if (!config?.api_key) throw new Error("LLM API key is missing.");
 
-      if (!apiKey) {
-        if (this.llm_config === undefined) {
-          this.llm_config = null;
-          try {
-            const configResponse = await fetch("/api/llm-completion-config.json");
-            if (configResponse.ok) {
-              const config = await configResponse.json();
-              if (config.api_key) {
-                this.llm_config = {
-                  api_key: config.api_key,
-                  base_url: config.base_url || baseUrl,
-                };
-              }
-            }
-          } catch {
-            // Fallback to null already set
-          }
-        }
-        apiKey = this.llm_config?.api_key;
-        baseUrl = this.llm_config?.base_url || baseUrl;
-      }
-
-      if (!apiKey) {
-        throw new Error(
-          "LLM API key is missing. Please provide it via the OpenRouter API key input field below.",
-        );
-      }
-
-      const audioBuffer = await fetch(event.audioUrl).then((res) => res.arrayBuffer());
-      const base64Audio = binary2base64(new Uint8Array(audioBuffer));
-
-      const now = new Date();
-      const dateTimeStr = now.toISOString();
-
-      const openai = new OpenAI({
-        apiKey,
-        baseURL: baseUrl,
-        dangerouslyAllowBrowser: true,
-      });
+      const audioBuffer = await fetch(event.audioUrl).then(res => res.arrayBuffer());
+      const openai = new OpenAI({ apiKey: config.api_key, baseURL: config.base_url, dangerouslyAllowBrowser: true });
 
       const stream = await openai.chat.completions.create({
         stream: true,
         model: "mistralai/voxtral-small-24b-2507",
-        messages: [{
-          role: "system",
-          content: [
-            {
-              type: "text",
-              text:
-                `Current time: ${dateTimeStr}. User uploads audio of what they want, answer request concisely. Answer in English with words/chars that english tts in chrome can handle.`,
-            },
-          ],
-        }, {
-          role: "user",
-          content: [
-            {
-              type: "input_audio",
-              input_audio: {
-                data: base64Audio,
-                format: "wav",
-              },
-            },
-          ],
-        }],
-      });
+        messages: [
+          { role: "system", content: `Current time: ${new Date().toISOString()}. Answer concisely in English.` },
+          { role: "user", content: [{ type: "input_audio", input_audio: { data: binary2base64(new Uint8Array(audioBuffer)), format: "wav" } }] }
+        ],
+      }) as any as AsyncIterable<any>;
 
-      let fullResponse = "";
-      let currentSentence = "";
-      const sentenceEndRegex = /[.!?]\s+/;
-
+      let full = "", buf = "";
       for await (const chunk of stream) {
         const content = chunk.choices[0]?.delta?.content || "";
-        if (content) {
-          fullResponse += content;
-          currentSentence += content;
-
-          if (sentenceEndRegex.test(currentSentence)) {
-            const parts = currentSentence.split(sentenceEndRegex);
-            while (parts.length > 1) {
-              const toSpeak = parts.shift()?.trim();
-              if (toSpeak) {
-                log(`Streaming sentence: ${toSpeak}`);
-                await this.client.speak(toSpeak);
-              }
-            }
-            currentSentence = parts[0] || "";
-          }
+        full += content; buf += content;
+        const parts = buf.split(/[.!?]\s+/);
+        while (parts.length > 1) {
+          const s = parts.shift()?.trim();
+          if (s) { log(`Streaming: ${s}`); await this.client.speak(s); }
         }
+        buf = parts[0] || "";
       }
 
-      if (currentSentence.trim()) {
-        log(`Streaming final sentence: ${currentSentence.trim()}`);
-        await this.client.speak(currentSentence.trim());
-      }
-
-      if (!fullResponse) {
-        log("No response text from LLM.");
-        await this.client.speak("I'm sorry, I didn't get that.");
-      }
+      if (buf.trim()) { log(`Final: ${buf.trim()}`); await this.client.speak(buf.trim()); }
+      if (!full) await this.client.speak("I'm sorry, I didn't get that.");
     } catch (error: any) {
       logError(`Error processing command with LLM: ${error}`);
       log(`Error processing command: ${error}`);
