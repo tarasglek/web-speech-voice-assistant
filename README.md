@@ -14,6 +14,14 @@ Here is my recipe:
 
 This can run on Chrome, Safari, and even mobile browsers with no server-side components. This does not work on Brave or Firefox due to missing browser features.
 
+## Development
+
+```bash
+pnpm install
+pnpm dev   # Start dev server
+pnpm build # Build for production
+```
+
 ## Configuration
 
 [Live Demo](https://tarasglek.github.io/web-speech-voice-assistant/)
