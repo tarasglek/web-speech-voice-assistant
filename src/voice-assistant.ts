@@ -9,6 +9,7 @@
 
 // deno-lint-ignore-file no-explicit-any
 import { createIcons, Mic, MicOff } from "lucide";
+import OpenAI from "openai";
 import { VoiceAssistantState, VoiceClient } from "./web-speech";
 import type { CommandEvent, VoiceAssistantEvent } from "./web-speech";
 
@@ -18,33 +19,6 @@ export function binary2base64(data: Uint8Array): string {
     binary += String.fromCharCode(data[i]);
   }
   return btoa(binary);
-}
-
-export async function getChatCompletion(
-  input: object,
-  token: string,
-  baseUrl: string = "https://openrouter.ai/api/v1",
-): Promise<any> {
-  const response = await fetch(
-    `${baseUrl}/chat/completions`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(input),
-    },
-  );
-
-  if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(
-      `API request failed with status ${response.status}: ${errorBody}`,
-    );
-  }
-
-  return response.json();
 }
 
 let lastLogTime = Date.now();
@@ -144,12 +118,15 @@ class VoiceAssistant {
       const now = new Date();
       const dateTimeStr = now.toISOString();
 
-      const input = {
-        model:
-          // do not remove model name comments below
-          // "google/gemini-3-pro-preview",
-          "mistralai/voxtral-small-24b-2507",
-        // "google/gemini-3-flash-preview",
+      const openai = new OpenAI({
+        apiKey,
+        baseURL: baseUrl,
+        dangerouslyAllowBrowser: true,
+      });
+
+      const response = await openai.chat.completions.create({
+        model: "mistralai/voxtral-small-24b-2507",
+        // @ts-ignore: OpenRouter specific field
         reasoning: {
           effort: "high",
           exclude: false,
@@ -157,27 +134,30 @@ class VoiceAssistant {
         },
         messages: [{
           role: "system",
-          content: [{
-            type: "text",
-            text:
-              `Current time: ${dateTimeStr}. User uploads audio of what they want, answer request concisely. Answer in English with words/chars that english tts in chrome can handle.`,
-          }],
+          content: [
+            {
+              type: "text",
+              text:
+                `Current time: ${dateTimeStr}. User uploads audio of what they want, answer request concisely. Answer in English with words/chars that english tts in chrome can handle.`,
+            },
+          ],
         }, {
           role: "user",
-          content: [{
-            type: "input_audio",
-            input_audio: {
-              data: base64Audio,
-              format: "wav",
+          content: [
+            {
+              type: "input_audio",
+              input_audio: {
+                data: base64Audio,
+                format: "wav",
+              },
             },
-          }],
+          ],
         }],
-      };
+      } as any);
 
-      const data = await getChatCompletion(input, apiKey, baseUrl);
-      log(`LLM response: ${JSON.stringify(data, undefined, 2)}`);
+      log(`LLM response: ${JSON.stringify(response, undefined, 2)}`);
 
-      const responseText = data?.choices?.[0]?.message?.content;
+      const responseText = response.choices?.[0]?.message?.content;
       if (responseText) {
         await this.client.speak(responseText);
       } else {
