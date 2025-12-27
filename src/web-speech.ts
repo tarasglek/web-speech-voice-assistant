@@ -165,8 +165,10 @@ export class VoiceClient {
     if (this.state === VoiceAssistantState.MUTED) {
       this.state = VoiceAssistantState.LISTENING_FOR_WAKE_WORD;
       this.#log(`Unmuted.`);
+      this.#recognition.start();
     } else {
       this.#log(`Muting.`);
+      this.#recognition.stop();
       globalThis.speechSynthesis.cancel();
       if (
         this.state === VoiceAssistantState.RECORDING_USER_SPEECH ||
@@ -424,7 +426,10 @@ export class VoiceClient {
   }
 
   #onEnd() {
-    if (this.state === VoiceAssistantState.SPEAKING) return;
+    if (
+      this.state === VoiceAssistantState.SPEAKING ||
+      this.state === VoiceAssistantState.MUTED
+    ) return;
     this.#recognition.start();
   }
 }
